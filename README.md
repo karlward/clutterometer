@@ -1,6 +1,6 @@
 clutterometer
 =============
-Clutterometer attempts to guage the amount of clutter present in a kitchen 
+Clutterometer attempts to gauge the amount of clutter present in a kitchen 
 sink, using various sensors (video camera, force sensing floor mat) and 
 actuators (servo, speaker).  It was created for our "Conscientious Sink" 
 midterm project for Tom Igoe's class Introduction to Physical Computing in 
