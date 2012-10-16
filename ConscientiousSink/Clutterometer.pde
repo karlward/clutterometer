@@ -103,8 +103,8 @@ class Clutterometer {
       int baseline_g = (baseline_pixel >> 8) & 0xFF;
       int baseline_b = baseline_pixel & 0xFF;
       if ( (abs(current_r - baseline_r) < 10) && (abs(current_g - baseline_g) < 10) && (abs(current_b - baseline_b) < 10) ) { 
-        p[i] = color(255, 255, 255); 
-        //p[i] = color(int(random(255)),int(random(255)),int(random(255)));
+        //p[i] = color(255, 255, 255); 
+        p[i] = color(int(random(255)),int(random(255)),int(random(255)));
         //p[i] = current_frame[i];
       }
       else { 
