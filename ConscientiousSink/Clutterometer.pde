@@ -1,60 +1,28 @@
 /*
  * Clutterometer
- * by Andrew Cerrito, Jon Wasserman, and Karl Ward
- * 2012
+ * Copyright 2012 Andrew Cerrito, Jon Wasserman, and Karl Ward
+ * See the file CREDITS for details on external code referenced/incorporated 
+ * See the file COPYING for details on software licensing 
  *
- * We owe a creative debt to:
- * - Golan Levin for his excellent example code (e.g. FrameDifferencing) within the Processing Examples. 
- * - Melissa dela Merced, Dan O'Sullivan, and Heather Velez for their CaptureAxisCamera code
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
  * 
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * 
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 import processing.video.*;
 
-Capture video; // video stream
-int array_size; // number of pixels in a frame of video stream
-int current_frame[]; 
-boolean capture_started = false; // whether current_frame is loaded
-Clutterometer cm; // will measure amount of clutter
-
-void setup() { 
-  size(640, 480); 
-  video = new Capture(this, width, height, 24); // start video stream  
-  video.start();
-  array_size = video.width * video.height; 
-  current_frame = new int[array_size]; // frame with the current state
-  loadPixels(); 
-  cm = new Clutterometer();
-} 
-
-void draw() { 
-  if (!capture_started) { 
-    return; 
-  }
-  
-  arrayCopy(current_frame, pixels);
-  for (int i = 0; i < array_size; i++) { 
-    if (current_frame[i] != cm.baseline_frame[i]) { 
-      pixels[i] = current_frame[i]; 
-    }
-    else { 
-      pixels[i] = color(int(random(255)), int(random(255)), int(random(255))); 
-    }
-  }
-  updatePixels();
-}
-
-public void captureEvent(Capture v) {
-  v.read(); 
-  v.loadPixels();
-  arrayCopy(v.pixels, current_frame); 
-  capture_started = true;
-//  image(v, 0, 0);
-}
-
 class Clutterometer { 
   // attributes 
-  byte clutter; // percentage of sink surface obscured, range betwee 0-100
+  byte clutter; // percentage of sink surface obscured, range between 0-100
   boolean calibration = false; // calibration state, which is false until call to calibrate()
   int baseline_frame[] = new int[array_size]; // frame with the empty sink
   int pre_frame[] = new int[array_size]; // frame with state just before entrance
@@ -70,13 +38,14 @@ class Clutterometer {
   // Initialization method 
   private void init() {
     if (!calibration) { 
-      println("Need to calibrate camera before sensing...");  
-      boolean cam_calibration = this.camera_calibrate();
+      //println("Need to calibrate camera before sensing...");  
+      //boolean cam_calibration = this.camera_calibrate();
+      boolean cam_calibration = false; // FIXME
       println("Need to calibrate mat before sensing..."); 
       boolean mat_calibration = this.mat_calibrate(); 
 
       // set calibration attribute to true if both camera and mat are calibrated
-      calibration = (cam_calibration && mat_calibration);
+      //calibration = (cam_calibration && mat_calibration);
     }
     else { 
       println("Calibration already complete.");
@@ -89,6 +58,7 @@ class Clutterometer {
     arrayCopy(current_frame, baseline_frame); 
     clutter = 0; 
     println("Camera calibration complete");
+    calibration = true; // FIXME
     return(true);
   }
 

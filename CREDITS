@@ -1,0 +1,14 @@
+Clutterometer
+Copyright 2012 Andrew Cerrito, Jon Wasserman, and Karl Ward 
+
+(see file COPYING for details on software licensing)
+
+Clutterometer owes a creative and technical debt to the following: 
+
+- Golan Levin for his excellent example code (e.g. FrameDifferencing) within 
+  the Processing Examples 
+- Melissa dela Merced, Dan O'Sullivan, and Heather Velez for 
+  CaptureAxisCamera and SinkCam (see https://github.com/mdelamerced/sinkCam )
+- Tom Igoe for guidance 
+- Tom Igoe's ITP Fall 2012 PComp section for guidance
+- Dan Shiffman for guidance 
