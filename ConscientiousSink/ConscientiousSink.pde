@@ -36,8 +36,9 @@ void draw() {
     println("capture not ready yet"); 
     return;
   }
-
-  arrayCopy(cm.sense(), pixels); 
+  byte clutter = cm.cam_sense();
+  println("clutter: " + clutter);  
+  arrayCopy(cm.show_diff(), pixels); 
   updatePixels();
 }
 

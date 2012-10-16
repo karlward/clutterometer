@@ -29,6 +29,7 @@ class Clutterometer {
   int array_size; // number of pixels in a frame of the capture
   int baseline_frame[]; // frame with the empty sink
   int current_frame[]; // the latest frame from the capture
+  int diff_frame[]; // a visualization of the deviation from the baseline_frame
   int pre_frame[]; // frame with state just before entrance
   int exit_frame[]; // frame with the state at exit
 
@@ -39,6 +40,7 @@ class Clutterometer {
     array_size = v.width * v.height; 
     baseline_frame = new int[array_size];
     current_frame = new int[array_size];
+    diff_frame = new int[array_size]; 
     pre_frame = new int[array_size];
     exit_frame = new int[array_size];
     this.init();
@@ -83,13 +85,14 @@ class Clutterometer {
     arrayCopy(p, current_frame); 
     capture_started = true; 
     if (!calibration) { 
-      camera_calibrate(); 
+      camera_calibrate();
     }
   }
 
   // Compare current frame to baseline frame, pixel by pixel
   //  allowing for small deviations for R, G, and B values
-  int[] sense() {
+  byte cam_sense() {
+    int count = 0; 
     int p[] = new int[array_size]; 
     for (int i = 0; i < array_size; i++) { 
       color current_pixel = current_frame[i]; 
@@ -103,15 +106,23 @@ class Clutterometer {
       int baseline_g = (baseline_pixel >> 8) & 0xFF;
       int baseline_b = baseline_pixel & 0xFF;
       if ( (abs(current_r - baseline_r) < 10) && (abs(current_g - baseline_g) < 10) && (abs(current_b - baseline_b) < 10) ) { 
-        //p[i] = color(255, 255, 255); 
-        p[i] = color(int(random(255)),int(random(255)),int(random(255)));
+        p[i] = color(255, 255, 255); 
+        //p[i] = color(int(random(255)),int(random(255)),int(random(255)));
         //p[i] = current_frame[i];
       }
       else { 
+        count += 1; 
         p[i] = color(0, 0, 0);
       }
     }
-    return(p); 
+    arrayCopy(p, cm.diff_frame); 
+    println("count: " + count + ", array_size: " + array_size);
+    clutter = byte(count/float(array_size)*100); 
+    return(clutter);
+  }
+
+  int[] show_diff() {
+    return diff_frame;
   }
 }
 
