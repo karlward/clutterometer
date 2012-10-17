@@ -25,6 +25,8 @@ class Clutterometer {
   byte clutter; // percentage of sink surface obscured, range between 0-100
   //Capture v; 
   boolean calibration = false; // calibration state, which is false until call to calibrate()
+  boolean mega_cam_calibration = false; // test of new calibration code using multiple frames
+  List<Integer[]> mega_baseline_frame; // will contain 10 frames
   boolean capture_started = false; // whether current_frame is loaded
   int array_size; // number of pixels in a frame of the capture
   int baseline_frame[]; // frame with the empty sink
@@ -70,6 +72,12 @@ class Clutterometer {
     clutter = 0; 
     println("Camera calibration complete");
     calibration = true; // FIXME
+    return(true);
+  }
+  
+  private boolean mega_cam_calibrate() { 
+    // store up to 10 frames in mega_baseline_frame
+    // stop when 10 frames are stored 
     return(true);
   }
 
