@@ -20,6 +20,12 @@
 
 import processing.video.*;
 
+/** 
+ * ClutterCam interprets video data to determine how cluttered a scene is.
+ * 
+ * @author Andrew Cerrito, Jon Wasserman, and Karl Ward
+ * @version 0.1
+ */
 class ClutterCam { 
   // attributes 
   byte clutter; // percentage of sink surface obscured, range between 0-100
@@ -35,9 +41,11 @@ class ClutterCam {
   int pre_frame[]; // frame with state just before entrance
   int exit_frame[]; // frame with the state at exit
 
-  // Constructor method
-  //   NOTE: real sink must be empty, and mat must be unloaded, when constructor is called 
-  //   FIXME: provide interface to do calibration on demand 
+  /**
+   * Class constructor.
+   * NOTE: real sink must be empty when constructor is called.
+   * @param  v    a Capture (or CaptureAxis later) object
+   */
   ClutterCam(Capture v) {
     pixel_count = v.width * v.height; 
     baseline_frame = new int[pixel_count];
@@ -60,8 +68,14 @@ class ClutterCam {
     }
   }
 
-  // Camera calibration method 
-  //   capture state of sink when completely empty, setting baseline_frame
+  /**
+   * Camera calibration method 
+   * 
+   * Record state of sink when completely empty, setting baseline_frame
+   *   FIXME: provide method to do calibration on demand 
+   * 
+   * @return    true/false whether calibration succeeded
+   */
   private boolean calibrate() { 
     arrayCopy(current_frame, baseline_frame); 
     clutter = 0; 
@@ -70,12 +84,22 @@ class ClutterCam {
     return(true);
   }
   
+  /**
+   * New calibration code, which uses multiple frames instead of one. 
+   *
+   * @return    true/false whether calibration succeeded
+   */ 
   private boolean mega_calibrate() { 
     // store up to 10 frames in mega_baseline_frame
     // stop when 10 frames are stored 
     return(true);
   }
 
+  /** 
+   * Set the object's current_frame attribute to a pixel array
+   *
+   * @param  p    pixel array (array of int)
+   */
   void set_current_frame(int p[]) { 
     arrayCopy(p, current_frame); 
     capture_started = true; 
@@ -84,8 +108,13 @@ class ClutterCam {
     }
   }
 
-  // Compare current frame to baseline frame, pixel by pixel
-  //  allowing for small deviations for R, G, and B values
+  /**
+   * Compare current frame to baseline frame, pixel by pixel
+   *
+   *  allowing for small deviations for R, G, and B values
+   * 
+   * @return    number indicating the percentage of deviation from baseline
+   */
   byte sense() {
     int count = 0; 
     int p[] = new int[pixel_count]; 
@@ -116,6 +145,9 @@ class ClutterCam {
     return(clutter);
   }
 
+  /** 
+   * Display a frame of visualization, showing the different between current and baseline
+   */
   int[] show_diff() {
     return diff_frame;
   }
