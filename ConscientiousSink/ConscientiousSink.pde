@@ -21,30 +21,30 @@
 import processing.video.*;
 
 Capture video; // video stream
-Clutterometer cm; // will measure amount of clutter
+ClutterCam cam; // will measure amount of clutter
 
 void setup() { 
   size(640, 480); 
   video = new Capture(this, width, height, 24); // start video stream  
   video.start();
   loadPixels(); 
-  cm = new Clutterometer(video);
+  cam = new ClutterCam(video);
 } 
 
 void draw() { 
-  if (!cm.capture_started) { 
+  if (!cam.capture_started) { 
     println("capture not ready yet"); 
     return;
   }
-  byte clutter = cm.cam_sense();
+  byte clutter = cam.sense();
   println("clutter: " + clutter);  
-  arrayCopy(cm.show_diff(), pixels); 
+  arrayCopy(cam.show_diff(), pixels); 
   updatePixels();
 }
 
 public void captureEvent(Capture v) {
   v.read(); 
   v.loadPixels();
-  cm.set_current_frame(v.pixels); 
+  cam.set_current_frame(v.pixels); 
 }
 
