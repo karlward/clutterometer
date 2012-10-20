@@ -93,7 +93,9 @@ class ClutterCam {
   private boolean mega_calibrate() { 
     // store 10 frames in mega_baseline_frame
     if (!mega_calibration && mega_baseline_frame.size() < 10) { 
-      mega_baseline_frame.add(current_frame); 
+      int[] copy_frame = new int[pixel_count]; 
+      arrayCopy(current_frame, copy_frame); 
+      mega_baseline_frame.add(copy_frame); 
       println("trying... " + str(mega_baseline_frame.size()));
     }
     if (mega_baseline_frame.size() == 10) {
@@ -137,17 +139,18 @@ class ClutterCam {
       int current_g = (current_pixel >> 8) & 0xFF;
       int current_b = current_pixel & 0xFF;
       // Extract red, green, and blue components from previous pixel
+      // FIXME: make it work with range or average instead of single value
       int baseline_r = (baseline_pixel >> 16) & 0xFF;
       int baseline_g = (baseline_pixel >> 8) & 0xFF;
       int baseline_b = baseline_pixel & 0xFF;
-      if ( (abs(current_r - baseline_r) < 10) && (abs(current_g - baseline_g) < 10) && (abs(current_b - baseline_b) < 10) ) { 
-        p[i] = color(255, 255, 255); 
-        //p[i] = color(int(random(255)),int(random(255)),int(random(255)));
-        //p[i] = current_frame[i];
+      if ( (abs(current_r - baseline_r) < 10) 
+           && (abs(current_g - baseline_g) < 10) 
+           && (abs(current_b - baseline_b) < 10) ) { 
+        p[i] = color(255, 255, 255); // set pixel to white, meaning no change
       }
       else { 
         count += 1; 
-        p[i] = color(0, 0, 0);
+        p[i] = color(0, 0, 0); // set pixel to black, meaning change
       }
     }
     arrayCopy(p, diff_frame); 

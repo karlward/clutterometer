@@ -35,11 +35,12 @@ void draw() {
     println("capture not ready yet"); 
     return;
   }
-  byte clutter = cam.sense();
   if (cam.mega_baseline_frame.size() == 10) { 
+    byte clutter = cam.sense();
     for (int[] frame : cam.mega_baseline_frame) { 
       loadPixels(); 
-      arrayCopy(cam.show_diff(), pixels); // FIXME: need to fix sense() and show_diff()
+      arrayCopy(frame, pixels); 
+      //arrayCopy(cam.show_diff(), pixels); // FIXME: need to fix sense() and show_diff()
       updatePixels();
     }
   }
