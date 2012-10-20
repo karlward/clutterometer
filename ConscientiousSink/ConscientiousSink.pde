@@ -36,17 +36,13 @@ void draw() {
     return;
   }
   byte clutter = cam.sense();
-  //println("clutter: " + clutter);  
-  //arrayCopy(cam.show_diff(), pixels); 
   if (cam.mega_baseline_frame.size() == 10) { 
     for (int[] frame : cam.mega_baseline_frame) { 
       loadPixels(); 
-      arrayCopy(cam.show_diff(), pixels); 
-      //arrayCopy(frame, pixels); 
+      arrayCopy(cam.show_diff(), pixels); // FIXME: need to fix sense() and show_diff()
       updatePixels();
     }
   }
-  //updatePixels();
 }
 
 public void captureEvent(Capture v) {
