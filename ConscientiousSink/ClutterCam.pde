@@ -31,7 +31,7 @@ import processing.video.*;
  */
 class ClutterCam { 
   // attributes 
-  byte clutter; // percentage of sink surface obscured, range between 0-100
+  int clutter; // percentage of sink surface obscured, range between 0-100
   //Capture v; 
   boolean calibration = false; // calibration state (indicates if we have a baseline)
   ArrayList<int[]> baseline_dframe; // a decaframe containing 10 frames, showing the empty sink
@@ -113,7 +113,7 @@ class ClutterCam {
    * 
    * @return    number indicating the percentage of deviation from baseline
    */
-  byte sense() {
+  int sense() {
     int count = 0; 
     int p[] = new int[pixel_count]; 
     for (int i = 0; i < pixel_count; i++) { 

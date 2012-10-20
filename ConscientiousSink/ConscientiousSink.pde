@@ -19,6 +19,10 @@
  */
 
 import processing.video.*;
+import processing.serial.*; 
+
+Serial myPort;       
+
 
 CaptureAxisCamera video; // video stream
 ClutterCam cam; // will measure amount of clutter
@@ -29,6 +33,12 @@ void setup() {
   video = new CaptureAxisCamera(this, "128.122.151.82", width, height, false);
   //video.start();  // you need this line if you want to use Capture
   cam = new ClutterCam(video); // create a ClutterCam associated with the video Capture
+  
+  // List all the available serial ports:
+  println(Serial.list());
+
+  // Open the port you are using at the rate you want:
+  myPort = new Serial(this, Serial.list()[4], 9600);
 } 
 
 void draw() { 
@@ -37,8 +47,12 @@ void draw() {
     return;
   }
   else { // sense the clutter and display a visualization
-    byte clutter = cam.sense();
-    println(clutter);
+    int clutter = cam.sense();
+    //println(clutter);
+    // write to serial port for Arduino 
+    // Send a capital A out the serial port:
+    myPort.write(clutter);
+    
     for (int[] frame : cam.baseline_dframe) { // iterate through each frame in baseline_dframe
       loadPixels(); 
       arrayCopy(cam.show_diff(), pixels); // FIXME: need to fix sense() and show_diff()
