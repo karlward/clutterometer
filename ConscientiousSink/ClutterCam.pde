@@ -47,7 +47,7 @@ class ClutterCam {
    * NOTE: real sink must be empty when constructor is called.
    * @param  v    a Capture (or CaptureAxis later) object
    */
-  ClutterCam(Capture v) {
+  ClutterCam(CaptureAxisCamera v) { // if using Capture, you need to change this to ClutterCam(Capture v) { 
     pixel_count = v.width * v.height; 
     baseline_dframe = new ArrayList<int[]>(); 
     baseline_dframe.ensureCapacity(10); // decaframe, holding 10 frames instead of one
@@ -141,6 +141,12 @@ class ClutterCam {
     arrayCopy(p, diff_frame); 
     clutter = byte(count/float(pixel_count)*100); 
     return(clutter);
+  }
+
+  private boolean compare_pixel(color c_p) { 
+    boolean same = false; 
+    
+    return(same);  
   }
 
   /** 

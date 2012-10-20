@@ -20,13 +20,14 @@
 
 import processing.video.*;
 
-Capture video; // video stream
+CaptureAxisCamera video; // video stream
 ClutterCam cam; // will measure amount of clutter
 
 void setup() { 
   size(640, 480); 
-  video = new Capture(this, width, height, 24); // start video stream  
-  video.start();
+  //video = new Capture(this, width, height, 24); // use this line if you want to use Capture  
+  video = new CaptureAxisCamera(this, "128.122.151.82", width, height, false);
+  //video.start();  // you need this line if you want to use Capture
   cam = new ClutterCam(video); // create a ClutterCam associated with the video Capture
 } 
 
@@ -46,7 +47,7 @@ void draw() {
   }
 }
 
-public void captureEvent(Capture v) {
+public void captureEvent(CaptureAxisCamera v) {
   v.read(); 
   v.loadPixels();
   cam.set_current_frame(v.pixels);
