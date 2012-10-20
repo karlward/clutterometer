@@ -30,9 +30,9 @@ class ClutterCam {
   // attributes 
   byte clutter; // percentage of sink surface obscured, range between 0-100
   //Capture v; 
-  boolean calibration = false; // calibration state, which is false until call to calibrate()
+  //boolean calibration = false; // calibration state, which is false until call to calibrate()
   boolean mega_calibration = false; // new calibration code using multiple frames
-  List<Integer[]> mega_baseline_frame; // will contain 10 frames
+  List<int[]> mega_baseline_frame; // will contain 10 frames
   boolean capture_started = false; // whether current_frame is loaded
   int pixel_count; // number of pixels in a frame of the capture
   int baseline_frame[]; // frame with the empty sink
@@ -49,24 +49,25 @@ class ClutterCam {
   ClutterCam(Capture v) {
     pixel_count = v.width * v.height; 
     baseline_frame = new int[pixel_count];
+    mega_baseline_frame = new ArrayList<int[]>(); 
     current_frame = new int[pixel_count];
     diff_frame = new int[pixel_count]; 
     pre_frame = new int[pixel_count];
     exit_frame = new int[pixel_count];
-    init();
+    //init();
   }
 
   // Initialization method 
-  private void init() {
-    if (!calibration) { 
-      //println("Need to calibrate camera before sensing...");  
-      //boolean cam_calibration = this.camera_calibrate();
-      calibration = false; // FIXME
-    }
-    else { 
-      println("Calibration already complete.");
-    }
-  }
+//  private void init() {
+//    if (!calibration) { 
+//      //println("Need to calibrate camera before sensing...");  
+//      //boolean cam_calibration = this.camera_calibrate();
+//      calibration = false; // FIXME
+//    }
+//    else { 
+//      println("Calibration already complete.");
+//    }
+//  }
 
   /**
    * Camera calibration method 
@@ -76,13 +77,13 @@ class ClutterCam {
    * 
    * @return    true/false whether calibration succeeded
    */
-  private boolean calibrate() { 
-    arrayCopy(current_frame, baseline_frame); 
-    clutter = 0; 
-    println("Camera calibration complete");
-    calibration = true; // FIXME
-    return(true);
-  }
+//  private boolean calibrate() { 
+//    arrayCopy(current_frame, baseline_frame); 
+//    clutter = 0; 
+//    println("Camera calibration complete");
+//    calibration = true; // FIXME
+//    return(calibration);
+//  }
   
   /**
    * New calibration code, which uses multiple frames instead of one. 
@@ -90,21 +91,31 @@ class ClutterCam {
    * @return    true/false whether calibration succeeded
    */ 
   private boolean mega_calibrate() { 
-    // store up to 10 frames in mega_baseline_frame
-    // stop when 10 frames are stored 
-    return(true);
+    // store 10 frames in mega_baseline_frame
+    if (!mega_calibration && mega_baseline_frame.size() < 10) { 
+      mega_baseline_frame.add(current_frame); 
+      println("trying... " + str(mega_baseline_frame.size()));
+    }
+    if (mega_baseline_frame.size() == 10) {
+      mega_calibration = true; 
+      println("Camera mega-calibration complete"); 
+    }
+    return(mega_calibration);
   }
 
   /** 
    * Set the object's current_frame attribute to a pixel array
    *
-   * @param  p    pixel array (array of int)
+   * @param  p    pixelcu array (array of int)
    */
   void set_current_frame(int p[]) { 
     arrayCopy(p, current_frame); 
     capture_started = true; 
-    if (!calibration) { 
-      calibrate();
+    //if (!calibration) { 
+    //  calibrate();
+    //}
+    if (!mega_calibration) { 
+      mega_calibrate(); 
     }
   }
 
@@ -119,7 +130,7 @@ class ClutterCam {
     int count = 0; 
     int p[] = new int[pixel_count]; 
     for (int i = 0; i < pixel_count; i++) { 
-      color current_pixel = current_frame[i]; 
+      color current_pixel = mega_baseline_frame.get(0)[i]; 
       color baseline_pixel = baseline_frame[i]; 
       // Extract the red, green, and blue components from current pixel
       int current_r = (current_pixel >> 16) & 0xFF; // Like red(), but faster
@@ -140,13 +151,12 @@ class ClutterCam {
       }
     }
     arrayCopy(p, diff_frame); 
-    println("count: " + count + " pixel count: " + pixel_count);
     clutter = byte(count/float(pixel_count)*100); 
     return(clutter);
   }
 
   /** 
-   * Display a frame of visualization, showing the different between current and baseline
+   * Return a frame of visualization, showing the different between current and baseline
    */
   int[] show_diff() {
     return diff_frame;

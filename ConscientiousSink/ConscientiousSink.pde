@@ -27,19 +27,26 @@ void setup() {
   size(640, 480); 
   video = new Capture(this, width, height, 24); // start video stream  
   video.start();
-  loadPixels(); 
-  cam = new ClutterCam(video);
+  cam = new ClutterCam(video); // create a ClutterCam associated with the video Capture
 } 
 
 void draw() { 
-  if (!cam.capture_started) { 
+  if (!cam.capture_started) { // wait until the camera is ready
     println("capture not ready yet"); 
     return;
   }
   byte clutter = cam.sense();
-  println("clutter: " + clutter);  
-  arrayCopy(cam.show_diff(), pixels); 
-  updatePixels();
+  //println("clutter: " + clutter);  
+  //arrayCopy(cam.show_diff(), pixels); 
+  if (cam.mega_baseline_frame.size() == 10) { 
+    for (int[] frame : cam.mega_baseline_frame) { 
+      loadPixels(); 
+      arrayCopy(cam.show_diff(), pixels); 
+      //arrayCopy(frame, pixels); 
+      updatePixels();
+    }
+  }
+  //updatePixels();
 }
 
 public void captureEvent(Capture v) {
