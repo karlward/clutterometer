@@ -31,16 +31,16 @@ void setup() {
 } 
 
 void draw() { 
-  if (!cam.capture_started) { // wait until the camera is ready
-    println("capture not ready yet"); 
+  if (!cam.calibration) { // wait until the camera is ready
+    println("Camera not calibrated yet."); 
     return;
   }
-  if (cam.mega_baseline_frame.size() == 10) { 
+  else { // sense the clutter and display a visualization
     byte clutter = cam.sense();
-    for (int[] frame : cam.mega_baseline_frame) { 
+    println(clutter);
+    for (int[] frame : cam.baseline_dframe) { // iterate through each frame in baseline_dframe
       loadPixels(); 
-      arrayCopy(frame, pixels); 
-      //arrayCopy(cam.show_diff(), pixels); // FIXME: need to fix sense() and show_diff()
+      arrayCopy(cam.show_diff(), pixels); // FIXME: need to fix sense() and show_diff()
       updatePixels();
     }
   }
@@ -49,6 +49,6 @@ void draw() {
 public void captureEvent(Capture v) {
   v.read(); 
   v.loadPixels();
-  cam.set_current_frame(v.pixels); 
+  cam.set_current_frame(v.pixels);
 }
 

@@ -23,6 +23,9 @@ import processing.video.*;
 /** 
  * ClutterCam interprets video data to determine how cluttered a scene is.
  * 
+ * "Clutter" is considered deviation from baseline.  We'll see how well 
+ * that works. 
+ * 
  * @author Andrew Cerrito, Jon Wasserman, and Karl Ward
  * @version 0.1
  */
@@ -30,12 +33,10 @@ class ClutterCam {
   // attributes 
   byte clutter; // percentage of sink surface obscured, range between 0-100
   //Capture v; 
-  //boolean calibration = false; // calibration state, which is false until call to calibrate()
-  boolean mega_calibration = false; // new calibration code using multiple frames
-  List<int[]> mega_baseline_frame; // will contain 10 frames
+  boolean calibration = false; // calibration state (indicates if we have a baseline)
+  ArrayList<int[]> baseline_dframe; // a decaframe containing 10 frames, showing the empty sink
   boolean capture_started = false; // whether current_frame is loaded
   int pixel_count; // number of pixels in a frame of the capture
-  int baseline_frame[]; // frame with the empty sink
   int current_frame[]; // the latest frame from the capture
   int diff_frame[]; // a visualization of the deviation from the baseline_frame
   int pre_frame[]; // frame with state just before entrance
@@ -48,8 +49,8 @@ class ClutterCam {
    */
   ClutterCam(Capture v) {
     pixel_count = v.width * v.height; 
-    baseline_frame = new int[pixel_count];
-    mega_baseline_frame = new ArrayList<int[]>(); 
+    baseline_dframe = new ArrayList<int[]>(); 
+    baseline_dframe.ensureCapacity(10); // decaframe, holding 10 frames instead of one
     current_frame = new int[pixel_count];
     diff_frame = new int[pixel_count]; 
     pre_frame = new int[pixel_count];
@@ -77,47 +78,31 @@ class ClutterCam {
    * 
    * @return    true/false whether calibration succeeded
    */
-//  private boolean calibrate() { 
-//    arrayCopy(current_frame, baseline_frame); 
-//    clutter = 0; 
-//    println("Camera calibration complete");
-//    calibration = true; // FIXME
-//    return(calibration);
-//  }
-  
-  /**
-   * New calibration code, which uses multiple frames instead of one. 
-   *
-   * @return    true/false whether calibration succeeded
-   */ 
-  private boolean mega_calibrate() { 
-    // store 10 frames in mega_baseline_frame
-    if (!mega_calibration && mega_baseline_frame.size() < 10) { 
-      int[] copy_frame = new int[pixel_count]; 
+  private boolean calibrate() { 
+    // store 10 frames in baseline_frame
+    if (!calibration && baseline_dframe.size() < 10) { 
+      final int[] copy_frame = new int[pixel_count]; // final because it will go into an ArrayList
       arrayCopy(current_frame, copy_frame); 
-      mega_baseline_frame.add(copy_frame); 
-      println("trying... " + str(mega_baseline_frame.size()));
+      baseline_dframe.add(copy_frame); 
+      println("trying... " + str(baseline_dframe.size()));
     }
-    if (mega_baseline_frame.size() == 10) {
-      mega_calibration = true; 
-      println("Camera mega-calibration complete"); 
+    if (baseline_dframe.size() == 10) {
+      calibration = true; 
+      println("Camera calibration complete"); 
     }
-    return(mega_calibration);
+    return(calibration);
   }
 
   /** 
    * Set the object's current_frame attribute to a pixel array
    *
-   * @param  p    pixelcu array (array of int)
+   * @param  p    pixel array (array of int)
    */
   void set_current_frame(int p[]) { 
     arrayCopy(p, current_frame); 
     capture_started = true; 
-    //if (!calibration) { 
-    //  calibrate();
-    //}
-    if (!mega_calibration) { 
-      mega_calibrate(); 
+    if (!calibration) { 
+      calibrate();
     }
   }
 
@@ -132,8 +117,8 @@ class ClutterCam {
     int count = 0; 
     int p[] = new int[pixel_count]; 
     for (int i = 0; i < pixel_count; i++) { 
-      color current_pixel = mega_baseline_frame.get(0)[i]; 
-      color baseline_pixel = baseline_frame[i]; 
+      color current_pixel = current_frame[i]; 
+      color baseline_pixel = baseline_dframe.get(0)[i]; 
       // Extract the red, green, and blue components from current pixel
       int current_r = (current_pixel >> 16) & 0xFF; // Like red(), but faster
       int current_g = (current_pixel >> 8) & 0xFF;
