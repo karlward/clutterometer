@@ -23,9 +23,10 @@ import processing.serial.*;
 
 Serial myPort;       
 
-
 CaptureAxisCamera video; // video stream
 ClutterCam cam; // will measure amount of clutter
+int clutter; 
+boolean presence; 
 
 void setup() { 
   size(640, 480); 
@@ -33,7 +34,7 @@ void setup() {
   video = new CaptureAxisCamera(this, "128.122.151.82", width, height, false);
   //video.start();  // you need this line if you want to use Capture
   cam = new ClutterCam(video); // create a ClutterCam associated with the video Capture
-  
+
   // List all the available serial ports:
   println(Serial.list());
 
@@ -47,12 +48,11 @@ void draw() {
     return;
   }
   else { // sense the clutter and display a visualization
-    int clutter = cam.sense();
+    clutter = cam.sense();
     //println(clutter);
     // write to serial port for Arduino 
-    // Send a capital A out the serial port:
-    myPort.write(clutter);
-    
+    //myPort.write(clutter); // commented out while we test ClutterMat
+
     for (int[] frame : cam.baseline_dframe) { // iterate through each frame in baseline_dframe
       loadPixels(); 
       arrayCopy(cam.show_diff(), pixels); // FIXME: need to fix sense() and show_diff()
@@ -67,3 +67,19 @@ public void captureEvent(CaptureAxisCamera v) {
   cam.set_current_frame(v.pixels);
 }
 
+void serialEvent (Serial s) {
+  // get the byte:
+  int inByte = s.read();
+
+  int baseline_mat = 50; // mat should output between 0-255
+
+  // set a variable that indicates presence at the mat 
+  if (inByte > baseline_mat) { 
+    presence = true;
+    println("presence is true, the killer is in the house! (near the sink!)!"); 
+  }
+  else { 
+    presence = false;
+    println("presence is false, the killer is outside the house!"); 
+  }
+}

@@ -84,7 +84,7 @@ class ClutterCam {
       final int[] copy_frame = new int[pixel_count]; // final because it will go into an ArrayList
       arrayCopy(current_frame, copy_frame); 
       baseline_dframe.add(copy_frame); 
-      println("trying... " + str(baseline_dframe.size()));
+      //println("trying... " + str(baseline_dframe.size()));
     }
     if (baseline_dframe.size() == 10) {
       calibration = true; 
