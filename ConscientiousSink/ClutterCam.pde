@@ -45,8 +45,9 @@ class ClutterCam {
   int exit_frame[]; // frame with the state at exit
   
   // a polygon that identifies the area we want the camera to view
-  Polygon view;
-
+  int[] x; // x coordinates of polygon
+  int[] y; // x coordinates of polygon
+  Polygon view; // the polygon itself
 
   /**
    * Class constructor.
@@ -64,8 +65,8 @@ class ClutterCam {
     exit_frame = new int[pixel_count];
    
     // the are we want the camera to view
-    int[] x = { 20, 600, 600, 20 }; // the x coordinates of the polygon's points
-    int[] y = { 20, 20, 400, 400 }; // the y coordinates of the polygon's points 
+    x = new int[] { 20, 600, 600, 20 }; // the x coordinates of the polygon's points
+    y = new int[] { 20, 20, 400, 400 }; // the y coordinates of the polygon's points 
     view = new Polygon(x, y, 4); 
   }
 
@@ -148,7 +149,17 @@ class ClutterCam {
       }
     }
     arrayCopy(p, diff_frame); 
-    clutter = int(count/float(pixel_count)*100); 
+    // calculate area of view polygon
+    float area = abs(
+      (
+        (this.x[0]*this.y[1] - this.y[0]*this.x[1]) 
+        + (this.x[1]*this.y[2] - this.y[1]*this.x[2]) 
+        + (this.x[2]*this.y[3] - this.y[2]*this.x[3]) 
+        + (this.x[3]*this.y[0] - this.y[3]*this.x[0]) 
+      ) 
+      / 2
+    ); 
+    clutter = int(count/area*100); 
     return(clutter);
   }
 
