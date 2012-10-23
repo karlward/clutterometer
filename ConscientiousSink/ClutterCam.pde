@@ -34,7 +34,8 @@ class ClutterCam {
   int clutter; // percentage of sink surface obscured, range between 0-100
   //Capture v; 
   boolean calibration = false; // calibration state (indicates if we have a baseline)
-  ArrayList<int[]> baseline_dframe; // a decaframe containing 10 frames, showing the empty sink
+  ArrayList<int[]> baseline_dframe; // a decaframe containing multiple frames, showing the empty sink
+  int dframe_size = 10; // size of baseline_dframe ArrayList
   boolean capture_started = false; // whether current_frame is loaded
   int pixel_count; // number of pixels in a frame of the capture
   int current_frame[]; // the latest frame from the capture
@@ -51,7 +52,7 @@ class ClutterCam {
 //  ClutterCam(CaptureAxisCamera v) { // if using Capture, you need to change this to ClutterCam(Capture v) { 
     pixel_count = v.width * v.height; 
     baseline_dframe = new ArrayList<int[]>(); 
-    baseline_dframe.ensureCapacity(10); // decaframe, holding 10 frames instead of one
+    baseline_dframe.ensureCapacity(dframe_size); // holds multiple frames instead of one
     current_frame = new int[pixel_count];
     diff_frame = new int[pixel_count]; 
     pre_frame = new int[pixel_count];
@@ -67,14 +68,13 @@ class ClutterCam {
    * @return    true/false whether calibration succeeded
    */
   private boolean calibrate() { 
-    // store 10 frames in baseline_frame
-    if (!calibration && baseline_dframe.size() < 10) { 
+    if (!calibration && baseline_dframe.size() < dframe_size) { 
       final int[] copy_frame = new int[pixel_count]; // final because it will go into an ArrayList
       arrayCopy(current_frame, copy_frame); 
       baseline_dframe.add(copy_frame); 
       //println("trying... " + str(baseline_dframe.size()));
     }
-    if (baseline_dframe.size() == 10) {
+    if (baseline_dframe.size() == dframe_size) {
       calibration = true; 
       println("Camera calibration complete"); 
     }
