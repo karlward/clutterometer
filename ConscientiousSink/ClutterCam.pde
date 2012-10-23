@@ -19,6 +19,7 @@
  */
 
 import processing.video.*;
+import java.awt.*;
 
 /** 
  * ClutterCam interprets video data to determine how cluttered a scene is.
@@ -42,6 +43,10 @@ class ClutterCam {
   int diff_frame[]; // a visualization of the deviation from the baseline_frame
   int pre_frame[]; // frame with state just before entrance
   int exit_frame[]; // frame with the state at exit
+  
+  // a polygon that identifies the area we want the camera to view
+  Polygon view;
+
 
   /**
    * Class constructor.
@@ -57,6 +62,11 @@ class ClutterCam {
     diff_frame = new int[pixel_count]; 
     pre_frame = new int[pixel_count];
     exit_frame = new int[pixel_count];
+   
+    // the are we want the camera to view
+    int[] x = { 20, 600, 600, 20 }; // the x coordinates of the polygon's points
+    int[] y = { 20, 20, 400, 400 }; // the y coordinates of the polygon's points 
+    view = new Polygon(x, y, 4); 
   }
 
   /**
@@ -128,7 +138,14 @@ class ClutterCam {
       else { 
         count++;
         p[i] = color(0, 0, 0); // set pixel to black, meaning change
-      }      
+      } 
+      // test: discard pixels outside of the view polygon
+      // for now we just mark them with color static
+      int p_x = i % width; // I think this works for calculating the x coordinate
+      int p_y = int(i / height); // I think this works for calculating the y coordinate 
+      if (!(view.contains(p_x, p_y))) { 
+        p[i] = color(int(random(0,255)), int(random(0,255)), int(random(0,255))); 
+      }
     }
     arrayCopy(p, diff_frame); 
     clutter = int(count/float(pixel_count)*100); 
