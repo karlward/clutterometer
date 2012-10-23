@@ -45,9 +45,10 @@ class ClutterCam {
   /**
    * Class constructor.
    * NOTE: real sink must be empty when constructor is called.
-   * @param  v    a Capture (or CaptureAxis later) object
+   * @param  v    a CaptureAxisCamara object
    */
-  ClutterCam(CaptureAxisCamera v) { // if using Capture, you need to change this to ClutterCam(Capture v) { 
+  ClutterCam(Capture v) { // if using Capture, you need to change this to ClutterCam(Capture v) { 
+//  ClutterCam(CaptureAxisCamera v) { // if using Capture, you need to change this to ClutterCam(Capture v) { 
     pixel_count = v.width * v.height; 
     baseline_dframe = new ArrayList<int[]>(); 
     baseline_dframe.ensureCapacity(10); // decaframe, holding 10 frames instead of one
@@ -55,20 +56,7 @@ class ClutterCam {
     diff_frame = new int[pixel_count]; 
     pre_frame = new int[pixel_count];
     exit_frame = new int[pixel_count];
-    //init();
   }
-
-  // Initialization method 
-//  private void init() {
-//    if (!calibration) { 
-//      //println("Need to calibrate camera before sensing...");  
-//      //boolean cam_calibration = this.camera_calibrate();
-//      calibration = false; // FIXME
-//    }
-//    else { 
-//      println("Calibration already complete.");
-//    }
-//  }
 
   /**
    * Camera calibration method 
@@ -107,46 +95,71 @@ class ClutterCam {
   }
 
   /**
-   * Compare current frame to baseline frame, pixel by pixel
+   * Compare current frame to baseline frames, pixel by pixel, looking for deviation
    *
    *  allowing for small deviations for R, G, and B values
    * 
    * @return    number indicating the percentage of deviation from baseline
    */
-  int sense() {
+  int sense_deviation() {
     int count = 0; 
     int p[] = new int[pixel_count]; 
     for (int i = 0; i < pixel_count; i++) { 
+      int same_count = 0; 
       color current_pixel = current_frame[i]; 
-      color baseline_pixel = baseline_dframe.get(0)[i]; 
-      // Extract the red, green, and blue components from current pixel
-      int current_r = (current_pixel >> 16) & 0xFF; // Like red(), but faster
-      int current_g = (current_pixel >> 8) & 0xFF;
-      int current_b = current_pixel & 0xFF;
-      // Extract red, green, and blue components from previous pixel
-      // FIXME: make it work with range or average instead of single value
-      int baseline_r = (baseline_pixel >> 16) & 0xFF;
-      int baseline_g = (baseline_pixel >> 8) & 0xFF;
-      int baseline_b = baseline_pixel & 0xFF;
-      if ( (abs(current_r - baseline_r) < 10) 
-           && (abs(current_g - baseline_g) < 10) 
-           && (abs(current_b - baseline_b) < 10) ) { 
+ 
+      // iterate through all baseline frames, comparing R, G, and B
+      boolean same = false;
+      for (int[] baseline_frame : baseline_dframe) { 
+        color baseline_pixel = baseline_frame[i]; 
+      
+        if (compare_pixel(current_pixel, baseline_pixel) == true) { 
+          same_count++; // this could be optimized with a break statement 
+        }
+      }
+      //if (same_count >= (baseline_dframe.size() / 2)) { // more than half are the same 
+      if (same_count > 0) { // current pixel is same in at least 1 baseline frame 
+        same = true; 
+      } 
+      else { same = false; } 
+      if (same) { 
         p[i] = color(255, 255, 255); // set pixel to white, meaning no change
-      }
+      } 
       else { 
-        count += 1; 
+        count++;
         p[i] = color(0, 0, 0); // set pixel to black, meaning change
-      }
+      }      
     }
     arrayCopy(p, diff_frame); 
-    clutter = byte(count/float(pixel_count)*100); 
+    clutter = int(count/float(pixel_count)*100); 
     return(clutter);
   }
 
-  private boolean compare_pixel(color c_p) { 
-    boolean same = false; 
-    
-    return(same);  
+  private boolean compare_pixel(color pixel_1, color pixel_2) { 
+    boolean result = false; // will hold result of comparison
+    if (pixel_1 == pixel_2) { // cheap comparison
+      result = true; 
+    }
+    else { // do expensive comparisons 
+      // Extract the red, green, and blue components from first pixel
+      int r_1 = (pixel_1 >> 16) & 0xFF; // Like red(), but faster
+      int g_1 = (pixel_1 >> 8) & 0xFF;
+      int b_1 = pixel_1 & 0xFF;
+      // Extract red, green, and blue components from second pixel
+      // FIXME: make it work with range or average instead of single value
+      int r_2 = (pixel_2 >> 16) & 0xFF;
+      int g_2 = (pixel_2 >> 8) & 0xFF;
+      int b_2 = pixel_2 & 0xFF;
+      // if R, G, and B values are close, consider them the same
+      // 10 is an arbitrary value
+      if ( (abs(r_1 - r_2) < 10) && (abs(g_1 - g_2) < 10) && (abs(b_1 - b_2) < 10) ) { 
+        result = true; 
+      }
+      else { 
+        result = false; 
+      } 
+    }
+    return(result); 
   }
 
   /** 
