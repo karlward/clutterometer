@@ -50,7 +50,7 @@ void draw() {
   }
   else { // sense the deviation and display a visualization
     clutter = cam.sense_deviation();
-    println(clutter);
+    //println(clutter);
     // write to serial port for Arduino 
     //myPort.write(clutter); // commented out while we test ClutterMat
 

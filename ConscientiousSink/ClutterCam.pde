@@ -64,9 +64,9 @@ class ClutterCam {
     pre_frame = new int[pixel_count];
     exit_frame = new int[pixel_count];
    
-    // the are we want the camera to view
-    x = new int[] { 20, 600, 600, 20 }; // the x coordinates of the polygon's points
-    y = new int[] { 20, 20, 400, 400 }; // the y coordinates of the polygon's points 
+    // the area we want the camera to view
+    x = new int[] { 10, 630, 630, 10 }; // the x coordinates of the polygon's points
+    y = new int[] { 10, 10, 470, 470 }; // the y coordinates of the polygon's points 
     view = new Polygon(x, y, 4); 
   }
 
@@ -143,7 +143,7 @@ class ClutterCam {
       // test: discard pixels outside of the view polygon
       // for now we just mark them with color static
       int p_x = i % width; // I think this works for calculating the x coordinate
-      int p_y = int(i / height); // I think this works for calculating the y coordinate 
+      int p_y = int(float(i) / float(height)); // I think this works for calculating the y coordinate 
       if (!(view.contains(p_x, p_y))) { 
         p[i] = color(int(random(0,255)), int(random(0,255)), int(random(0,255))); 
       }
@@ -156,9 +156,11 @@ class ClutterCam {
         + (this.x[1]*this.y[2] - this.y[1]*this.x[2]) 
         + (this.x[2]*this.y[3] - this.y[2]*this.x[3]) 
         + (this.x[3]*this.y[0] - this.y[3]*this.x[0]) 
-      ) 
+        ) 
       / 2
     ); 
+    println(area); 
+    println(pixel_count); 
     clutter = int(count/area*100); 
     return(clutter);
   }
