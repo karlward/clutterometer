@@ -40,7 +40,7 @@ void setup() {
   println(Serial.list());
 
   // Open the port you are using at the rate you want:
-  //myPort = new Serial(this, Serial.list()[4], 9600);
+  myPort = new Serial(this, Serial.list()[4], 9600);
 } 
 
 void draw() { 
@@ -52,7 +52,7 @@ void draw() {
     clutter = cam.sense_deviation();
     println(clutter);
     // write to serial port for Arduino 
-    //myPort.write(clutter); // commented out while we test ClutterMat
+    myPort.write(clutter); // commented out while we test ClutterMat
 
     loadPixels(); 
     arrayCopy(cam.show_diff(), pixels); // FIXME: need to fix sense() and show_diff()
@@ -67,20 +67,20 @@ public void captureEvent(CaptureAxisCamera v) { // need if you want to use Captu
   cam.set_current_frame(v.pixels);
 }
 
-//void serialEvent (Serial s) {
-// get the byte:
-//  int inByte = s.read();
+void serialEvent (Serial s) {
+ get the byte:
+  int inByte = s.read();
 
-//  int baseline_mat = 50; // mat should output between 0-255
+  int baseline_mat = 50; // mat should output between 0-255
 
-// set a variable that indicates presence at the mat 
-//  if (inByte > baseline_mat) { 
-//    presence = true;
-//    println("presence is true, the killer is in the house! (near the sink!)!"); 
-//  }
-//  else { 
-//    presence = false;
-//    println("presence is false, the killer is outside the house!"); 
-//  }
-//}
+ set a variable that indicates presence at the mat 
+  if (inByte > baseline_mat) { 
+    presence = true;
+    println("presence is true, the killer is in the house! (near the sink!)!"); 
+  }
+  else { 
+    presence = false;
+    println("presence is false, the killer is outside the house!"); 
+  }
+}
 
