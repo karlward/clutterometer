@@ -116,6 +116,8 @@ class ClutterCam {
     int count = 0; 
     int p[] = new int[pixel_count]; 
     for (int i = 0; i < pixel_count; i++) { 
+      int p_x = i % width; // I think this works for calculating the x coordinate
+      int p_y = int(float(i) / float(height)); // I think this works for calculating the y coordinate 
       int same_count = 0; 
       color current_pixel = current_frame[i]; 
  
@@ -137,14 +139,16 @@ class ClutterCam {
         p[i] = color(255, 255, 255); // set pixel to white, meaning no change
       } 
       else { 
-        count++;
+        if (view.contains(p_x, p_y)) { 
+          count++;
+        }
         p[i] = color(0, 0, 0); // set pixel to black, meaning change
       } 
       // test: discard pixels outside of the view polygon
       // for now we just mark them with color static
-      int p_x = i % width; // I think this works for calculating the x coordinate
-      int p_y = int(float(i) / float(height)); // I think this works for calculating the y coordinate 
+
       if (!(view.contains(p_x, p_y))) { 
+        // discard this pizel, paint it mauve, don't count it 
         p[i] = color(100,50,50); 
       }
     }
