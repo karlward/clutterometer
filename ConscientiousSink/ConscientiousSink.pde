@@ -23,17 +23,17 @@ import processing.serial.*;
 
 Serial myPort;       
 
-Capture video; // video stream (using Capture instead of CaptureAxisCamera
-//CaptureAxisCamera video; // video stream
+//Capture video; // video stream (using Capture instead of CaptureAxisCamera
+CaptureAxisCamera video; // video stream
 ClutterCam cam; // will measure amount of clutter
 int clutter; 
 boolean presence; 
 
 void setup() { 
   size(640, 480); 
-  video = new Capture(this, width, height, 24); // use this line if you want to use Capture  
-  //video = new CaptureAxisCamera(this, "128.122.151.82", width, height, false);
-  video.start();  // you need this line if you want to use Capture
+  //video = new Capture(this, width, height, 24); // use this line if you want to use Capture  
+  video = new CaptureAxisCamera(this, "128.122.151.82", width, height, false);
+  //video.start();  // you need this line if you want to use Capture
   cam = new ClutterCam(video); // create a ClutterCam associated with the video Capture
 
   // List all the available serial ports:
@@ -50,7 +50,7 @@ void draw() {
   }
   else { // sense the deviation and display a visualization
     clutter = cam.sense_deviation();
-    //println(clutter);
+    println(clutter);
     // write to serial port for Arduino 
     //myPort.write(clutter); // commented out while we test ClutterMat
 
@@ -60,20 +60,20 @@ void draw() {
   }
 }
 
-public void captureEvent(Capture v) { // need this line if using Capture instead of CaptureAxisCamera
-//public void captureEvent(CaptureAxisCamera v) {
+//public void captureEvent(Capture v) { // need this line if using Capture instead of CaptureAxisCamera
+public void captureEvent(CaptureAxisCamera v) { // need if you want to use CaptureAxisCamera
   v.read(); 
   v.loadPixels();
   cam.set_current_frame(v.pixels);
 }
 
 //void serialEvent (Serial s) {
-  // get the byte:
+// get the byte:
 //  int inByte = s.read();
 
 //  int baseline_mat = 50; // mat should output between 0-255
 
-  // set a variable that indicates presence at the mat 
+// set a variable that indicates presence at the mat 
 //  if (inByte > baseline_mat) { 
 //    presence = true;
 //    println("presence is true, the killer is in the house! (near the sink!)!"); 
@@ -83,3 +83,4 @@ public void captureEvent(Capture v) { // need this line if using Capture instead
 //    println("presence is false, the killer is outside the house!"); 
 //  }
 //}
+

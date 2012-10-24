@@ -54,8 +54,8 @@ class ClutterCam {
    * NOTE: real sink must be empty when constructor is called.
    * @param  v    a CaptureAxisCamara object
    */
-  ClutterCam(Capture v) { // if using Capture, you need to change this to ClutterCam(Capture v) { 
-//  ClutterCam(CaptureAxisCamera v) { // if using Capture, you need to change this to ClutterCam(Capture v) { 
+  //ClutterCam(Capture v) { // if using Capture, you need to change this to ClutterCam(Capture v) { 
+  ClutterCam(CaptureAxisCamera v) { // if using Capture, you need to change this to ClutterCam(Capture v) { 
     pixel_count = v.width * v.height; 
     baseline_dframe = new ArrayList<int[]>(); 
     baseline_dframe.ensureCapacity(dframe_size); // holds multiple frames instead of one
@@ -65,8 +65,8 @@ class ClutterCam {
     exit_frame = new int[pixel_count];
    
     // the area we want the camera to view
-    x = new int[] { 10, 630, 630, 10 }; // the x coordinates of the polygon's points
-    y = new int[] { 10, 10, 470, 470 }; // the y coordinates of the polygon's points 
+    x = new int[] { 150, 420, 420, 150 }; // the x coordinates of the polygon's points
+    y = new int[] { 250, 250, 550, 550 }; // the y coordinates of the polygon's points 
     view = new Polygon(x, y, 4); 
   }
 
@@ -145,7 +145,7 @@ class ClutterCam {
       int p_x = i % width; // I think this works for calculating the x coordinate
       int p_y = int(float(i) / float(height)); // I think this works for calculating the y coordinate 
       if (!(view.contains(p_x, p_y))) { 
-        p[i] = color(int(random(0,255)), int(random(0,255)), int(random(0,255))); 
+        p[i] = color(100,50,50); 
       }
     }
     arrayCopy(p, diff_frame); 
@@ -159,8 +159,8 @@ class ClutterCam {
         ) 
       / 2
     ); 
-    println(area); 
-    println(pixel_count); 
+    //println(area); 
+    //println(pixel_count); 
     clutter = int(count/area*100); 
     return(clutter);
   }
