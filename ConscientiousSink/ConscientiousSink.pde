@@ -68,12 +68,12 @@ public void captureEvent(CaptureAxisCamera v) { // need if you want to use Captu
 }
 
 void serialEvent (Serial s) {
- get the byte:
+ // get the byte:
   int inByte = s.read();
 
   int baseline_mat = 50; // mat should output between 0-255
 
- set a variable that indicates presence at the mat 
+ // set a variable that indicates presence at the mat 
   if (inByte > baseline_mat) { 
     presence = true;
     println("presence is true, the killer is in the house! (near the sink!)!"); 
