@@ -57,6 +57,15 @@ void draw() {
     loadPixels(); 
     arrayCopy(cam.show_diff(), pixels); // FIXME: need to fix sense() and show_diff()
     updatePixels();
+    // draw the polygon used in ClutterCam to restrict view to sink, this is a test 
+    noFill(); 
+    beginShape(); 
+    vertex(cam.x[0], cam.y[0]);
+    vertex(cam.x[1], cam.y[1]);
+    vertex(cam.x[2], cam.y[2]);
+    vertex(cam.x[3], cam.y[3]);
+    vertex(cam.x[0], cam.y[0]);
+    endShape();
   }
 }
 
@@ -68,19 +77,19 @@ public void captureEvent(CaptureAxisCamera v) { // need if you want to use Captu
 }
 
 void serialEvent (Serial s) {
- // get the byte:
+  // get the byte:
   int inByte = s.read();
 
   int baseline_mat = 50; // mat should output between 0-255
 
- // set a variable that indicates presence at the mat 
+  // set a variable that indicates presence at the mat 
   if (inByte > baseline_mat) { 
     presence = true;
-    println("presence is true, the killer is in the house! (near the sink!)!"); 
+    println("presence is true, the killer is in the house! (near the sink!)!");
   }
   else { 
     presence = false;
-    println("presence is false, the killer is outside the house!"); 
+    println("presence is false, the killer is outside the house!");
   }
 }
 

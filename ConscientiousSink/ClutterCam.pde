@@ -65,8 +65,8 @@ class ClutterCam {
     exit_frame = new int[pixel_count];
    
     // the area we want the camera to view
-    x = new int[] { 150, 420, 420, 150 }; // the x coordinates of the polygon's points
-    y = new int[] { 250, 250, 550, 550 }; // the y coordinates of the polygon's points 
+    x = new int[] { 135, 420, 420, 135 }; // the x coordinates of the polygon's points
+    y = new int[] { 120, 120, 360, 360 }; // the y coordinates of the polygon's points 
     view = new Polygon(x, y, 4); 
   }
 
@@ -143,38 +143,30 @@ class ClutterCam {
     int p[] = new int[pixel_count]; 
     for (int i = 0; i < pixel_count; i++) { 
       int p_x = i % width; // I think this works for calculating the x coordinate
-      int p_y = int(float(i) / float(height)); // I think this works for calculating the y coordinate 
+      int p_y = i / width; // I think this works for calculating the y coordinate 
+
       int same_count = 0; 
       color current_pixel = current_frame[i]; 
  
-      // iterate through all baseline frames, comparing R, G, and B
-      boolean same = false;
-      for (int[] baseline_frame : baseline_dframe) { 
-        color baseline_pixel = baseline_frame[i]; 
+      if (view.contains(p_x, p_y)) { // we only care about pixels in our constrained view
+        // iterate through all baseline frames, comparing R, G, and B
+        for (int[] baseline_frame : baseline_dframe) { 
+          color baseline_pixel = baseline_frame[i]; 
       
-        if (compare_pixel(current_pixel, baseline_pixel) == true) { 
-          same_count++; // this could be optimized with a break statement 
+          if (compare_pixel(current_pixel, baseline_pixel) == true) { 
+            same_count++; // this could be optimized with a break statement 
+          }
         }
-      }
-      //if (same_count >= (baseline_dframe.size() / 2)) { // more than half are the same 
-      if (same_count > 0) { // current pixel is same in at least 1 baseline frame 
-        same = true; 
-      } 
-      else { same = false; } 
-      if (same) { 
-        p[i] = color(255, 255, 255); // set pixel to white, meaning no change
-      } 
-      else { 
-        if (view.contains(p_x, p_y)) { 
+        //if (same_count >= (baseline_dframe.size() / 2)) { // more than half are the same 
+        if (same_count > 0) { // current pixel is same in at least 1 baseline frame 
+          p[i] = color(255, 255, 255); // set pixel to white, meaning no change
+        } 
+        else { 
           count++;
-        }
-        p[i] = color(0, 0, 0); // set pixel to black, meaning change
+          p[i] = color(0, 0, 0); // set pixel to black, meaning change
+        } 
       } 
-      // test: discard pixels outside of the view polygon
-      // for now we just mark them with color static
-
-      if (!(view.contains(p_x, p_y))) { 
-        // discard this pizel, paint it mauve, don't count it 
+      else { // not in constrained view, discard this pixel, paint it mauve, don't count it 
         p[i] = color(100,50,50); 
       }
     }
@@ -187,7 +179,7 @@ class ClutterCam {
         + (this.x[2]*this.y[3] - this.y[2]*this.x[3]) 
         + (this.x[3]*this.y[0] - this.y[3]*this.x[0]) 
         ) 
-      / 2
+      / 2.0
     ); 
     //println(area); 
     //println(pixel_count); 
