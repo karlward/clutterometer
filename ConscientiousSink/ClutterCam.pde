@@ -66,7 +66,7 @@ class ClutterCam {
    
     // the area we want the camera to view
     x = new int[] { 135, 420, 420, 135 }; // the x coordinates of the polygon's points
-    y = new int[] { 120, 120, 360, 360 }; // the y coordinates of the polygon's points 
+    y = new int[] { 120, 120, 340, 340 }; // the y coordinates of the polygon's points 
     view = new Polygon(x, y, 4); 
   }
 

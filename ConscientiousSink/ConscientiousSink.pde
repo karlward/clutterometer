@@ -35,6 +35,7 @@ void setup() {
   video = new CaptureAxisCamera(this, "128.122.151.82", width, height, false);
   //video.start();  // you need this line if you want to use Capture
   cam = new ClutterCam(video); // create a ClutterCam associated with the video Capture
+  presence = false; 
 
   // List all the available serial ports:
   println(Serial.list());
@@ -52,7 +53,7 @@ void draw() {
     clutter = cam.sense_deviation();
     println(clutter);
     // write to serial port for Arduino 
-    myPort.write(clutter); // commented out while we test ClutterMat
+    //myPort.write(clutter); // commented out while we test ClutterMat
 
     loadPixels(); 
     arrayCopy(cam.show_diff(), pixels); // FIXME: need to fix sense() and show_diff()
@@ -84,12 +85,16 @@ void serialEvent (Serial s) {
 
   // set a variable that indicates presence at the mat 
   if (inByte > baseline_mat) { 
-    presence = true;
-    println("presence is true, the killer is in the house! (near the sink!)!");
+    if (presence == false) { // state transition from false to true 
+      presence = true;
+      println("setting presence to true");
+    } 
   }
   else { 
-    presence = false;
-    println("presence is false, the killer is outside the house!");
+    if (presence == true) { // state transition from true to false 
+      presence = false;
+      println("presence is false, the killer is outside the house!");
+    }
   }
 }
 
