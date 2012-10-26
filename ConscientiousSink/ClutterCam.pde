@@ -105,6 +105,27 @@ class ClutterCam {
     }
   }
 
+  /** 
+   * Set the object's pre_frame attribute to a pixel array
+   *
+   * @param  p    pixel array (array of int)
+   */
+  void set_pre_frame(int p[]) { 
+    pre_frame = new int[pixel_count];
+    arrayCopy(p, pre_frame); 
+  } 
+
+  /** 
+   * Set the object's exit_frame attribute to a pixel array
+   *
+   * @param  p    pixel array (array of int)
+   */  
+  void set_exit_frame(int p[]) { 
+    exit_frame = new int[pixel_count];
+    arrayCopy(p, exit_frame); 
+  }
+    
+    
   /**
    * Compare current frame to baseline frames, pixel by pixel, looking for deviation
    *
