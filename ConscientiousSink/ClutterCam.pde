@@ -106,23 +106,28 @@ class ClutterCam {
   }
 
   /** 
-   * Set the object's pre_frame attribute to a pixel array
+   * Set the object's pre_frame attribute to a pixel array, and compare pre_frame to baseline
    *
    * @param  p    pixel array (array of int)
+   * @return      number indicating the percentage of clutter in pre_frame
    */
-  void set_pre_frame(int p[]) { 
+  int set_pre_frame(int p[]) { 
+    int c = 0; // to store the clutter percentage for this frame
     pre_frame = new int[pixel_count];
     arrayCopy(p, pre_frame); 
+    return(c); // FIXME: c needs a real value 
   } 
 
   /** 
-   * Set the object's exit_frame attribute to a pixel array
+   * Set the object's exit_frame attribute to a pixel array, and compare exit_frame to baseline
    *
    * @param  p    pixel array (array of int)
    */  
-  void set_exit_frame(int p[]) { 
+  int set_exit_frame(int p[]) {
+    int c = 0; // to store the clutter percentage for this frame
     exit_frame = new int[pixel_count];
     arrayCopy(p, exit_frame); 
+    return(c); // FIXME: c needs a real value
   }
     
     
