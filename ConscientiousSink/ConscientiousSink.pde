@@ -87,13 +87,13 @@ void serialEvent (Serial s) {
   if (inByte > baseline_mat) { 
     if (presence == false) { // state transition from false to true 
       presence = true;
-      println("setting presence to true");
+      println("setting presence to true, trigger intro sound");
     } 
   }
   else { 
     if (presence == true) { // state transition from true to false 
       presence = false;
-      println("presence is false, the killer is outside the house!");
+      println("setting presence to false, trigger appropriate exit sound");
     }
   }
 }
