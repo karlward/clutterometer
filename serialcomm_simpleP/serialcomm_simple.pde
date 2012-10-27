@@ -1,8 +1,8 @@
-
 import processing.serial.*;
 
 boolean myTurn = false;
-boolean firstContact = false; // Have we heard from the microcontroller
+final int INVITATION = 127; // what we listen for during the handshake 
+final int REPLY = 126; // what we reply with when we see the handshake invitation
 
 Serial myPort;
 
@@ -11,9 +11,8 @@ void setup () {
   background(12, 23, 82);
   // List all available serial ports
   println(Serial.list()); 
-  String portName = Serial.list()[4];
+  String portName = Serial.list()[0];
   myPort = new Serial(this, portName, 9600); //opens the serial port
-  // read bytes into a buffer until you get a linefeed (ASCII 10):
 }
 
 void draw() {
@@ -21,26 +20,35 @@ void draw() {
 
 
 void serialEvent(Serial myPort) { 
-  if (!myTurn) {
-    int myByte = myPort.read();
-    myTurn = true;
-    // checks if there's actual data there
-    if (myByte >= 0) {
+  if (myTurn) { // write clutterometer position to serial
+    int percentage = int(random(100)); 
+    myPort.write(percentage); 
+    println("sending clutterometer percentage " + str(percentage)); 
+    myTurn = false;
+  }
+  else { // not my turn, so listen to serial port
+    // listen for handshake invitation
+    int inByte = myPort.read(); 
 
-      // if you haven't heard from the microncontroller yet, listen:
-      if (firstContact == false) {
-        if (myByte == 'a') { 
-          myPort.clear();          // clear the serial port buffer
-          firstContact = true;     // you've had first contact from the microcontroller
-          myPort.write('b');       // ask for more
-          println(myByte);
-          myTurn = false;
-        }
-      }
+    // if handshake received, transmit handshake reply 
+    if (inByte == INVITATION) { 
+      println("I got an INVITATION"); 
+      myTurn = true; 
+      myPort.write(REPLY); 
+      println("I sent a REPLY"); 
+      myTurn = false;
     }
-    // if you have heard from the microcontroller, proceed:
-    else if (myTurn) {
-      println(myByte);
+    else { // not handshake, listen for floormat value 
+      if (inByte == 0) { 
+        println("nobody on the mat");
+      } 
+      else if (inByte == 1) { 
+        println("somebody on the mat");
+      }
+      else { 
+        println("garbage data: " + str(inByte));
+      }
+      myTurn = true; 
     }
   }
 }
