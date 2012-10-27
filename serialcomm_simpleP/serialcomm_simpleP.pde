@@ -12,7 +12,7 @@ void setup () {
   // List all available serial ports
   println(Serial.list()); 
   String portName = Serial.list()[0];
-  myPort = new Serial(this, portName, 9600); //opens the serial port
+  myPort = new Serial(this, portName, 1200); //opens the serial port
 }
 
 void draw() {
@@ -23,7 +23,7 @@ void serialEvent(Serial myPort) {
   if (myTurn) { // write clutterometer position to serial
     int percentage = int(random(100)); 
     myPort.write(percentage); 
-    println("sending clutterometer percentage " + str(percentage)); 
+    //println("sending clutterometer percentage " + str(percentage)); 
     myTurn = false;
   }
   else { // not my turn, so listen to serial port
@@ -40,7 +40,7 @@ void serialEvent(Serial myPort) {
     }
     else { // not handshake, listen for floormat value 
       if (inByte == 0) { 
-        println("nobody on the mat");
+        //println("nobody on the mat");
       } 
       else if (inByte == 1) { 
         println("somebody on the mat");
