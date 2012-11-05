@@ -3,6 +3,7 @@ import processing.serial.*;
 boolean myTurn = false;
 final int INVITATION = 127; // what we listen for during the handshake 
 final int REPLY = 126; // what we reply with when we see the handshake invitation
+int presence = -1; // 1 if someone is on the mat, 0 if not
 
 Serial myPort;
 
@@ -40,10 +41,16 @@ void serialEvent(Serial myPort) {
     }
     else { // not handshake, listen for floormat value 
       if (inByte == 0) { 
-        //println("nobody on the mat");
+        if (presence != inByte) { 
+          presence = inByte; 
+          println("nobody on the mat");
+        }
       } 
       else if (inByte == 1) { 
-        println("somebody on the mat");
+        if (presence != inByte) {
+          presence = inByte;  
+          println("somebody on the mat");
+        }
       }
       else { 
         println("garbage data: " + str(inByte));

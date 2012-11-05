@@ -3,7 +3,7 @@
 Servo servoMotor;       // creates an instance of the servo object to control a servo
 
 const int INVITATION = 127; // handshake invitation message
-const int MAT = A1; // the mat sensor is connected to this pin
+const int MAT = A5; // the mat sensor is connected to this pin
 const int SERVO = 2; // the servo is connected to this pin
 
 boolean myTurn = true; // whether it is my turn to write 
@@ -48,13 +48,14 @@ void sendData() {
 void readData() {
   clutter = Serial.read();
   // replace digitalWrite with servo code
-  if (i == 10) { 
-    int servoAngle = map(clutter, 0, 100, 0, 179);
-    servoMotor.write(servoAngle); 
+  if (i == 20) { 
+  int servoAngle = map(clutter, 0, 100, 0, 179);
+  servoMotor.write(servoAngle); 
+  delay(50);
   }
   
   i++; 
-  if (i > 10) { 
+  if (i > 20) { 
     i = 0; 
   }
   myTurn = true;
