@@ -33,6 +33,10 @@ import java.awt.*;
 class ClutterCam { 
   // attributes 
   int clutter; // percentage of sink surface obscured, range between 0-100
+  int avg_clutter; // average of clutter values 
+  ArrayList<Integer> latest_values; // holds latest clutter values for averaging
+  int sample_size; // number of values we will use to average 
+  
   //Capture v; 
   boolean calibration = false; // calibration state (indicates if we have a baseline)
   ArrayList<int[]> baseline_dframe; // a decaframe containing multiple frames, showing the empty sink
@@ -63,6 +67,10 @@ class ClutterCam {
     diff_frame = new int[pixel_count]; 
     pre_frame = new int[pixel_count];
     exit_frame = new int[pixel_count];
+    
+    sample_size = 20; // how many values of the clutter reading we will use in the average
+    latest_values = new ArrayList<Integer>();
+    latest_values.ensureCapacity(sample_size); 
    
     // the area we want the camera to view
     x = new int[] { 135, 420, 420, 135 }; // the x coordinates of the polygon's points
@@ -184,7 +192,20 @@ class ClutterCam {
     //println(area); 
     //println(pixel_count); 
     clutter = int(count/area*100); 
-    return(clutter);
+    
+    if (latest_values.size() == sample_size) { // keep up to sample_size number of values 
+      latest_values.remove(sample_size - 1); // remove last item from end of array
+    } 
+    latest_values.add(0, clutter); // add latest value at the beginning of array
+
+    // calculate average of latest values 
+    int sum = 0; 
+    for (int this_value : latest_values) {
+      sum += this_value; // add them all up
+    }
+    avg_clutter = int(sum / latest_values.size()); // divide by number of values to get average
+    println("clutter v avg_clutter: " + str(clutter) + " " + str(avg_clutter)); 
+    return(avg_clutter);
   }
 
   private boolean compare_pixel(color pixel_1, color pixel_2) { 

@@ -21,10 +21,10 @@
 class ClutterMat { 
   boolean presence; 
   boolean calibration; 
-  int current_value; 
-  int sample_size; 
-  int avg_value; 
-  ArrayList<Integer> latest_values;  
+  int current_value; // the mat's latest reading
+  int sample_size; // number of values that we will use to average
+  int avg_value; // the average mat reading
+  ArrayList<Integer> latest_values; // holds multiple of the latest mat readings, for the average
 
   ClutterMat() { 
     presence = false; 
@@ -39,7 +39,7 @@ class ClutterMat {
     if (latest_values.size() == sample_size) { // keep up to sample_size number of values 
       calibration = true; 
       //println("Mat calibration complete."); 
-      latest_values.remove(9); // remove last item from end of array
+      latest_values.remove(sample_size - 1); // remove last item from end of array
     } 
     latest_values.add(0, value); // add latest value at the beginning of array
 
