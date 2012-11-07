@@ -97,13 +97,13 @@ void serialEvent (Serial matPort) {
   mat.set_current_value(inByte);
 
   if (mat.presence == true) { 
-    if (old_presence != mat.presence) { // state transition from false to true 
+    if (old_presence != mat.presence) { // state transition on mat from false to true 
       entrance_clutter = clutter; // record state of clutter at start of interaction
       println("stepped on mat, trigger intro sound"); // FIXME: put real sound code here
     }
   } 
   else if (mat.presence == false) { 
-    if (old_presence != mat.presence) { // state transition from true to false 
+    if (old_presence != mat.presence) { // state transition on mat from true to false 
       println("stepped off mat"); 
       if (entrance_clutter < clutter) { // clutter is worse than it was at beginning of interaction
         println("trigger exit sound for increased clutter"); // FIXME: put real sound code here
