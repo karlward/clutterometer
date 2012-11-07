@@ -27,8 +27,9 @@ Serial matPort;
 //Capture video; // video stream (using Capture instead of CaptureAxisCamera
 CaptureAxisCamera video; // video stream
 ClutterCam cam; // will measure amount of clutter
+ClutterMat mat; // will measure presence in front of sink
 int clutter; 
-boolean presence; 
+boolean old_presence; 
 
 void setup() { 
   size(640, 480); 
@@ -36,7 +37,8 @@ void setup() {
   video = new CaptureAxisCamera(this, "128.122.151.82", width, height, false);
   //video.start();  // you need this line if you want to use Capture
   cam = new ClutterCam(video); // create a ClutterCam associated with the video Capture
-  presence = false; 
+  mat = new ClutterMat(); 
+  //presence = false; 
 
   // List all the available serial ports:
   println(Serial.list());
@@ -49,6 +51,12 @@ void setup() {
 } 
 
 void draw() { 
+  if (!mat.calibration) { 
+    println("Mat not calibrated yet."); 
+    return;
+  }
+
+
   if (!cam.calibration) { // wait until the camera is ready
     println("Camera not calibrated yet."); 
     return;
@@ -57,7 +65,6 @@ void draw() {
     clutter = cam.sense_deviation();
     println("clutter is " + str(clutter));
     // write to serial port for Arduino 
-    int clutterPosition = int(map(clutter, 0, 100, 0, 180)); 
     servoPort.write(clutter); // commented out while we test ClutterMat
 
     loadPixels(); 
@@ -85,20 +92,19 @@ public void captureEvent(CaptureAxisCamera v) { // need if you want to use Captu
 void serialEvent (Serial matPort) {
   // get the byte:
   int inByte = matPort.read();
-  println("inByte = " + str(inByte)); 
+  println("mat inByte = " + str(inByte)); 
+  mat.set_current_value(inByte);
 
-  // set a variable that indicates presence at the mat 
-  if (inByte == 1) { 
-    if (presence == false) { // state transition from false to true 
-      presence = true;
-      println("setting presence to true, trigger intro sound");
-    } 
-  }
-  else { 
-    if (presence == true) { // state transition from true to false 
-      presence = false;
-      println("setting presence to false, trigger appropriate exit sound");
+  if (mat.presence == true) { 
+    if (old_presence != mat.presence) { // state transition from false to true 
+      println("stepped on mat, trigger intro sound"); // FIXME: put real sound code here
+    }
+  } 
+  else if (mat.presence == false) { 
+    if (old_presence != mat.presence) { // state transition from true to false 
+        println("stepped off mat, trigger exit sound"); // FIXME: put real sound code here
     }
   }
+  old_presence = mat.presence; 
 }
 

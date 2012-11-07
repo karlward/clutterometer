@@ -17,7 +17,56 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
- 
+
 class ClutterMat { 
+  boolean presence; 
+  boolean calibration; 
+  int current_value; 
+  int avg_value; 
+  ArrayList<Integer> latest_values;  
+
+  ClutterMat() { 
+    presence = false; 
+    calibration = false; 
+    latest_values = new ArrayList<Integer>();
+  }
+
+  void set_current_value (int value) { 
+    current_value = value; 
+    if (latest_values.size() == 10) { // only keep 10 values 
+      calibration = true; 
+      //println("Mat calibration complete."); 
+      latest_values.remove(9); // remove last item from end of array
+    } 
+    latest_values.add(value, 0); // add latest value at the beginning of array
+
+    // calculate average of latest values 
+    int sum = 0; 
+    for (int this_value : latest_values) {
+      sum += this_value; // add them all up
+    }
+    avg_value = int(sum / latest_values.size()); // divide by number of values to get average
+    if (avg_value > 90) { // someone is standing on the mat 
+      presence = true; 
+    } 
+    else { 
+      presence = false; 
+    }
+  }
+
   
+
+  int get_current_value() { 
+    if (latest_values.size() == 0) { // no values yet, so no average 
+      return(0);
+    } 
+    return avg_value;
+  }
+
+  private boolean calibrate() { 
+    boolean cal_status; 
+    cal_status = false;  // FIXME: implement a real calibration method and cal_status value
+    return cal_status;
+  }
 }
+
