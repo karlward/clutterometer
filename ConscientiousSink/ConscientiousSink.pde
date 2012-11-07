@@ -48,7 +48,7 @@ void setup() {
   //video.start();  // you need this line if you want to use Capture
   cam = new ClutterCam(video); // create a ClutterCam associated with the video Capture
   mat = new ClutterMat(); 
-  
+
   //presence = false; 
 
   // List all the available serial ports:
@@ -110,23 +110,31 @@ void serialEvent (Serial matPort) {
     if (old_presence != mat.presence) { // state transition on mat from false to true 
       entrance_clutter = clutter; // record state of clutter at start of interaction
       println("stepped on mat, trigger intro sound");
-      whisperingclean.play(0); // plays "cleeeaaan" whisper
-      whisperingclean = minim.loadFile("whisperingclean.mp3"); // reloads for next playback
+      if (whisperingclean.isPlaying() == false) {
+        whisperingclean.play(0); // plays "cleeeaaan" whisper
+        whisperingclean = minim.loadFile("whisperingclean.mp3"); // reloads for next playback
+      }
     }
   } 
   else if (mat.presence == false) { 
     if (old_presence != mat.presence) { // state transition on mat from true to false 
       println("stepped off mat"); 
       if (entrance_clutter < clutter) { // clutter is worse than it was at beginning of interaction
-        println("trigger exit sound for increased clutter"); 
-        ambientsink.play(0); // plays ambient dishes noise
-        ambientsink = minim.loadFile("ambientsink.mp3"); // reloads for next playback
+        println("trigger exit sound for increased clutter");
+        if (whisperingclean.isPlaying()) {
+          whisperingclean.pause();
+          whisperingclean.rewind();
+        }
+        if (ambientsink.isPlaying() == false) {
+          ambientsink.play(0); // plays ambient dishes noise
+          ambientsink = minim.loadFile("ambientsink.mp3"); // reloads for next playback
+        }
       }
       else if (entrance_clutter > clutter) { // clutter is better than it was at beginning of interaction
-        println("trigger exit sound for decreased clutter"); // FIXME: put real sound code here 
+        println("trigger exit sound for decreased clutter"); // FIXME: put real sound code here
       }
       else { 
-        println("no change in clutter at exit"); 
+        println("no change in clutter at exit");
       }
     }
   }
