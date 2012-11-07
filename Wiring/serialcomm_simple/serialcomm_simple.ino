@@ -3,7 +3,7 @@
 Servo servoMotor;       // creates an instance of the servo object to control a servo
 
 const int INVITATION = 127; // handshake invitation message
-const int MAT = A5; // the mat sensor is connected to this pin
+const int MAT = A1; // the mat sensor is connected to this pin
 const int SERVO = 2; // the servo is connected to this pin
 
 boolean myTurn = true; // whether it is my turn to write 
@@ -11,17 +11,19 @@ boolean myTurn = true; // whether it is my turn to write
 int clutter = 0; // the amount of clutter, sent via serial FROM Processing
 int presence = 0; // whether someone is on the mat, sent via serial TO Processing
 int i = 0; 
+long now = 0; 
 
 void setup() {
   pinMode(SERVO, OUTPUT);  
   // open serial communications
-  Serial.begin(1200);
+  Serial.begin(9600);
   servoMotor.attach(SERVO); 
-  //delay(300);
+  delay(300);
   establishContact();
 }
 
 void loop() {
+  now = millis(); 
   presence = readMat(); 
 
   if (myTurn) {
@@ -48,27 +50,27 @@ void sendData() {
 void readData() {
   clutter = Serial.read();
   // replace digitalWrite with servo code
-  if (i == 20) { 
-  int servoAngle = map(clutter, 0, 100, 0, 179);
-  servoMotor.write(servoAngle); 
-  delay(50);
+  if (now % 1000 < 100) { 
+    int servoAngle = map(clutter, 0, 100, 0, 179);
+    servoMotor.write(servoAngle); 
   }
-  
-  i++; 
-  if (i > 20) { 
-    i = 0; 
-  }
+
+//  i++; 
+//  if (i > 200) { 
+//    i = 0; 
+//  }
   myTurn = true;
 }
 
 int readMat() { 
   int matReading = analogRead(MAT); 
   //Serial.println(matReading); // remove
-  if (matReading > 300) { 
+  if (matReading > 200) { 
     return(1); 
   } 
   else {
     return(0); 
   } 
 }
+
 
