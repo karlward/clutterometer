@@ -29,6 +29,7 @@ CaptureAxisCamera video; // video stream
 ClutterCam cam; // will measure amount of clutter
 ClutterMat mat; // will measure presence in front of sink
 int clutter; 
+int entrance_clutter; 
 boolean old_presence; 
 
 void setup() { 
@@ -97,14 +98,24 @@ void serialEvent (Serial matPort) {
 
   if (mat.presence == true) { 
     if (old_presence != mat.presence) { // state transition from false to true 
+      entrance_clutter = clutter; // record state of clutter at start of interaction
       println("stepped on mat, trigger intro sound"); // FIXME: put real sound code here
     }
   } 
   else if (mat.presence == false) { 
     if (old_presence != mat.presence) { // state transition from true to false 
-        println("stepped off mat, trigger exit sound"); // FIXME: put real sound code here
+      println("stepped off mat"); 
+      if (entrance_clutter < clutter) { // clutter is worse than it was at beginning of interaction
+        println("trigger exit sound for increased clutter"); // FIXME: put real sound code here
+      }
+      else if (entrance_clutter > clutter) { // clutter is better than it was at beginning of interaction
+        println("trigger exit sound for decreased clutter"); // FIXME: put real sound code here 
+      }
+      else { 
+        println("no change in clutter at exit"); 
+      }
     }
   }
-  old_presence = mat.presence; 
+  old_presence = mat.presence;
 }
 
