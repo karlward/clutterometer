@@ -21,7 +21,8 @@
 import processing.video.*;
 import processing.serial.*; 
 
-Serial myPort;       
+Serial servoPort;
+Serial matPort;
 
 //Capture video; // video stream (using Capture instead of CaptureAxisCamera
 CaptureAxisCamera video; // video stream
@@ -40,8 +41,11 @@ void setup() {
   // List all the available serial ports:
   println(Serial.list());
 
-  // Open the port you are using at the rate you want:
-  myPort = new Serial(this, Serial.list()[4], 9600);
+  // open two serial ports, one for reading, one for writing
+  String servoPortName = Serial.list()[4];
+  servoPort = new Serial(this, servoPortName, 9600); // open 1 serial port for writing
+  String matPortName = Serial.list()[6]; 
+  matPort = new Serial(this, matPortName, 9600); // open another serial port for reading
 } 
 
 void draw() { 
@@ -51,9 +55,10 @@ void draw() {
   }
   else { // sense the deviation and display a visualization
     clutter = cam.sense_deviation();
-    println(clutter);
+    println("clutter is " + str(clutter));
     // write to serial port for Arduino 
-    //myPort.write(clutter); // commented out while we test ClutterMat
+    int clutterPosition = int(map(clutter, 0, 100, 0, 180)); 
+    servoPort.write(clutter); // commented out while we test ClutterMat
 
     loadPixels(); 
     arrayCopy(cam.show_diff(), pixels); // FIXME: need to fix sense() and show_diff()
@@ -77,14 +82,13 @@ public void captureEvent(CaptureAxisCamera v) { // need if you want to use Captu
   cam.set_current_frame(v.pixels);
 }
 
-void serialEvent (Serial s) {
+void serialEvent (Serial matPort) {
   // get the byte:
-  int inByte = s.read();
-
-  int baseline_mat = 50; // mat should output between 0-255
+  int inByte = matPort.read();
+  println("inByte = " + str(inByte)); 
 
   // set a variable that indicates presence at the mat 
-  if (inByte > baseline_mat) { 
+  if (inByte == 1) { 
     if (presence == false) { // state transition from false to true 
       presence = true;
       println("setting presence to true, trigger intro sound");
