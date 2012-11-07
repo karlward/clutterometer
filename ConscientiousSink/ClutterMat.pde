@@ -29,7 +29,7 @@ class ClutterMat {
   ClutterMat() { 
     presence = false; 
     calibration = false; 
-    sample_size = 10; 
+    sample_size = 20; // how many values of the mat reading we will use in the average
     latest_values = new ArrayList<Integer>();
     latest_values.ensureCapacity(sample_size); 
   }
