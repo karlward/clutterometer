@@ -63,7 +63,7 @@ void draw() {
   }
   else { // sense the deviation and display a visualization
     clutter = cam.sense_deviation();
-    println("clutter is " + str(clutter));
+    //println("clutter is " + str(clutter));
     // write to serial port for Arduino 
     servoPort.write(clutter); // commented out while we test ClutterMat
 
@@ -92,7 +92,7 @@ public void captureEvent(CaptureAxisCamera v) { // need if you want to use Captu
 void serialEvent (Serial matPort) {
   // get the byte:
   int inByte = matPort.read();
-  println("mat inByte = " + str(inByte)); 
+  //println("mat inByte = " + str(inByte)); 
   mat.set_current_value(inByte);
 
   if (mat.presence == true) { 

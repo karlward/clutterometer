@@ -22,23 +22,26 @@ class ClutterMat {
   boolean presence; 
   boolean calibration; 
   int current_value; 
+  int sample_size; 
   int avg_value; 
   ArrayList<Integer> latest_values;  
 
   ClutterMat() { 
     presence = false; 
     calibration = false; 
+    sample_size = 10; 
     latest_values = new ArrayList<Integer>();
+    latest_values.ensureCapacity(sample_size); 
   }
 
   void set_current_value (int value) { 
     current_value = value; 
-    if (latest_values.size() == 10) { // only keep 10 values 
+    if (latest_values.size() == sample_size) { // keep up to sample_size number of values 
       calibration = true; 
       //println("Mat calibration complete."); 
       latest_values.remove(9); // remove last item from end of array
     } 
-    latest_values.add(value, 0); // add latest value at the beginning of array
+    latest_values.add(0, value); // add latest value at the beginning of array
 
     // calculate average of latest values 
     int sum = 0; 
