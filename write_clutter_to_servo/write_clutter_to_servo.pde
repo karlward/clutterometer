@@ -17,7 +17,7 @@ void setup () {
 void draw() {
   int percentage = int(random(100)); 
   servoPort.write(percentage); 
-  //println("sending clutterometer percentage " + str(percentage));
+  println("sending clutterometer percentage " + str(percentage));
 }
 
 // whenever data comes from mat board, it gets read here
