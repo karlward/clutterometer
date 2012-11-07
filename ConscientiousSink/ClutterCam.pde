@@ -204,7 +204,7 @@ class ClutterCam {
       sum += this_value; // add them all up
     }
     avg_clutter = int(sum / latest_values.size()); // divide by number of values to get average
-    println("clutter v avg_clutter: " + str(clutter) + " " + str(avg_clutter)); 
+    //println("clutter v avg_clutter: " + str(clutter) + " " + str(avg_clutter)); 
     return(avg_clutter);
   }
 
