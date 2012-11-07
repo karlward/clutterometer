@@ -112,7 +112,7 @@ void serialEvent (Serial matPort) {
       println("stepped on mat, trigger intro sound");
       if (whisperingclean.isPlaying() == false) {
         whisperingclean.play(0); // plays "cleeeaaan" whisper
-        whisperingclean = minim.loadFile("whisperingclean.mp3"); // reloads for next playback
+        // whisperingclean = minim.loadFile("whisperingclean.mp3"); // reloads for next playback
       }
     }
   } 
@@ -122,8 +122,8 @@ void serialEvent (Serial matPort) {
       if (entrance_clutter < clutter) { // clutter is worse than it was at beginning of interaction
         println("trigger exit sound for increased clutter");
         if (whisperingclean.isPlaying()) {
-          whisperingclean.pause();
           whisperingclean.rewind();
+          whisperingclean.pause();
         }
         if (ambientsink.isPlaying() == false) {
           ambientsink.play(0); // plays ambient dishes noise
@@ -132,9 +132,25 @@ void serialEvent (Serial matPort) {
       }
       else if (entrance_clutter > clutter) { // clutter is better than it was at beginning of interaction
         println("trigger exit sound for decreased clutter"); // FIXME: put real sound code here
+        if (whisperingclean.isPlaying()) {   
+          whisperingclean.rewind();
+          whisperingclean.pause();
+        }
+        if (ambientsink.isPlaying() == false) {
+          ambientsink.play(0); // plays ambient dishes noise
+          ambientsink = minim.loadFile("ambientsink.mp3"); // reloads for next playback
+        }
       }
       else { 
         println("no change in clutter at exit");
+        if (whisperingclean.isPlaying()) {
+          whisperingclean.pause();
+          whisperingclean.rewind();
+        }
+        if (ambientsink.isPlaying() == false) {
+          ambientsink.play(0); // plays ambient dishes noise
+          ambientsink = minim.loadFile("ambientsink.mp3"); // reloads for next playback
+        }
       }
     }
   }
