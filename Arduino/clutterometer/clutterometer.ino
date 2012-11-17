@@ -23,10 +23,10 @@ void loop() {
 void readData() {
   if (Serial.available() > 0) { 
     clutter = Serial.read();
-    if (now % 500 < 100) { // write servo position approx every .5 seconds
-      int servoAngle = map(clutter, 0, 100, 179, 0);
+    //if (now % 500 < 100) { // write servo position approx every .5 seconds
+      int servoAngle = map(clutter, 0, 100, 0, 179);
       servoMotor.write(servoAngle); 
-    }
+    //}
   }
 }
 

@@ -63,13 +63,13 @@ void setup() {
 
 void draw() { 
   if (!mat.calibration) { 
-    println("Mat not calibrated yet."); 
+    //println("Mat not calibrated yet."); 
     return;
   }
 
 
   if (!cam.calibration) { // wait until the camera is ready
-    println("Camera not calibrated yet."); 
+    //println("Camera not calibrated yet."); 
     return;
   }
   else { // sense the deviation and display a visualization
